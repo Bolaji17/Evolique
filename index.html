@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EVOLIQUE — Official Deck</title>
+  <style>
+    :root {
+      --bg: #FFFFFF;
+      --surface: #FAFAFA;
+      --card-border: #E2E8F0;
+      --gold: #C5A059;
+      --gold-dark: #9A7B38;
+      --navy: #0A192F;
+      --text-main: #1E293B;
+      --text-muted: #64748B;
+      --font: 'Cinzel', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, serif, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* Deck Frame */
+    .deck {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      /* Increased bottom padding to prevent content overlap with raised controls */
+      padding: clamp(20px, 5vh, 60px) clamp(16px, 6vw, 80px) 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px);
+      transition: all 0.5s ease-out;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    /* Fluid Typography & Elements */
+    .slide-title {
+      font-size: clamp(1.4rem, 3.5vw, 2rem);
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      border-bottom: 2px solid var(--gold);
+      padding-bottom: 6px;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: clamp(0.95rem, 2vw, 1.1rem);
+      color: var(--gold-dark);
+      font-weight: 600;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    p { 
+      color: var(--text-main); 
+      line-height: 1.6; 
+      font-size: clamp(0.88rem, 1.8vw, 1rem); 
+      max-width: 900px; 
+      text-align: center; 
+      margin-bottom: 12px; 
+    }
+
+    /* Responsive Grid Architectures */
+    .grid-2 { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+      gap: 16px; 
+      width: 100%; 
+      max-width: 1000px; 
+    }
+
+    .grid-3 { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
+      gap: 16px; 
+      width: 100%; 
+      max-width: 1100px; 
+    }
+    
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--gold);
+      padding: clamp(14px, 2vw, 20px);
+      border-radius: 6px;
+      text-align: left;
+    }
+
+    .card h4 { color: var(--navy); margin-bottom: 6px; font-size: clamp(0.95rem, 1.8vw, 1.05rem); }
+    .card p { text-align: left; font-size: clamp(0.82rem, 1.5vw, 0.9rem); color: var(--text-muted); margin: 0; }
+
+    .tag-cloud { 
+      display: flex; 
+      flex-wrap: wrap; 
+      gap: 8px; 
+      justify-content: center; 
+      max-width: 1100px; 
+      max-height: 50vh; 
+      overflow-y: auto; 
+      padding: 10px 4px; 
+    }
+    .tag { 
+      background: var(--surface); 
+      border: 1px solid var(--gold); 
+      color: var(--navy); 
+      padding: 5px 12px; 
+      border-radius: 20px; 
+      font-size: clamp(0.75rem, 1.4vw, 0.85rem); 
+      font-weight: 600; 
+    }
+
+    /* Slide 1 Logo Image Specifics */
+    .logo-img { 
+      max-width: clamp(220px, 50vw, 450px); 
+      width: 80%; 
+      height: auto; 
+      margin-bottom: 16px; 
+    }
+
+    /* Raised and Scaled Navigation Bar */
+    .controls {
+      position: fixed;
+      bottom: 32px; /* Lifted above bottom ad placement */
+      left: 50%;
+      transform: translateX(-50%);
+      width: clamp(300px, 90vw, 1000px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 24px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: 40px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      z-index: 100;
+    }
+
+    .dots { display: flex; gap: 8px; max-width: 45vw; overflow-x: auto; padding: 4px 0; }
+    .dot { width: 10px; height: 10px; flex-shrink: 0; border-radius: 50%; background: #CBD5E1; cursor: pointer; transition: 0.3s; }
+    .dot.active { background: var(--gold); width: 24px; border-radius: 10px; }
+
+    /* Enlarged Buttons */
+    .btn {
+      background: var(--navy); 
+      color: #fff;
+      padding: 12px 28px; 
+      border-radius: 30px; 
+      font-weight: 700; 
+      font-size: 1rem;
+      cursor: pointer; 
+      border: none; 
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(10, 25, 47, 0.15);
+    }
+    .btn:hover { 
+      background: var(--gold); 
+      color: #000;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(197, 160, 89, 0.3);
+    }
+
+    /* Mobile Layout Tweaks */
+    @media (max-width: 600px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .slide { justify-content: flex-start; padding-top: 30px; }
+      .dots { display: none; }
+      .controls { bottom: 24px; padding: 10px 16px; width: 92vw; }
+      .btn { padding: 10px 22px; font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="deck">
+
+    <!-- Slide 1: Logo & Introduction -->
+    <section class="slide active">
+      <img src="Evolique.jpg" alt="EVOLIQUE Logo" class="logo-img">
+      <p class="subtitle">Every Great Business Starts with the Right Team</p>
+      <p>Evolique is a technology-enabled business execution ecosystem that helps entrepreneurs, startups, SMEs, corporations, and organizations transform ideas into successful businesses through one coordinated network of skilled professionals.</p>
+      <p>Instead of searching for multiple freelancers, agencies, or consultants, businesses partner with Evolique. We assemble the right experts, manage execution and deliver complete solutions, from strategy and branding to technology, operations, marketing, and growth.</p>
+      <p style="font-weight: 700; color: var(--gold-dark); margin-top: 10px;">Our mission is simple: To make building a business as seamless as having an idea.</p>
+    </section>
+
+    <!-- Slide 2: About Evolique -->
+    <section class="slide">
+      <h2 class="slide-title">About Evolique</h2>
+      <p class="subtitle">Who We Are</p>
+      <p>Evolique is redefining how businesses access professional expertise.</p>
+      <p>We are building an ecosystem where businesses can access every digital and business service they need through one trusted partner.</p>
+      <p>Rather than spending weeks searching for professionals, comparing portfolios, negotiating contracts, and coordinating different teams, businesses work directly with Evolique while we handle the complexity behind the scenes.</p>
+      <p>Every project is driven by strategy, managed with precision, and delivered through collaboration. Whether launching a startup, expanding a company, or transforming an existing organization, Evolique provides the right expertise at every stage of the journey.</p>
+    </section>
+
+    <!-- Slide 3: The Challenge -->
+    <section class="slide">
+      <h2 class="slide-title">The Challenge</h2>
+      <p>Starting and growing a business often requires expertise across multiple disciplines.</p>
+      <p>Founders typically need strategists, designers, developers, marketers, consultants, content creators, project managers, financial advisors, and many other specialists.</p>
+      <div class="grid-2" style="margin-top: 10px;">
+        <div class="card"><h4>Fragmented Communication</h4><p>Managing professionals independently creates silos and friction.</p></div>
+        <div class="card"><h4>Inconsistent Quality</h4><p>Lack of unified standards leads to unreliable deliverable outputs.</p></div>
+        <div class="card"><h4>Delayed Execution</h4><p>Misaligned timelines disrupt roadmaps and launch schedules.</p></div>
+        <div class="card"><h4>Increased Costs</h4><p>Overpaying across multiple vendor overheads drains resources.</p></div>
+      </div>
+      <p style="margin-top: 14px; font-weight: 600; color: var(--navy);">Many promising ideas fail—not because they lack potential, but because they lack coordinated execution.</p>
+    </section>
+
+    <!-- Slide 4: Our Solution -->
+    <section class="slide">
+      <h2 class="slide-title">Our Solution</h2>
+      <p>Evolique eliminates this complexity through one integrated ecosystem.</p>
+      <p>We connect businesses with carefully selected professionals while managing strategy, collaboration, project execution, quality assurance, and delivery through a centralized system.</p>
+      <p>Rather than simply connecting businesses to talent, Evolique becomes their strategic execution partner.</p>
+      <p>By combining human expertise with technology-enabled workflows, businesses can move from concept to execution faster, more efficiently, and with greater confidence.</p>
+    </section>
+
+    <!-- Slide 5: Mission & Vision -->
+    <section class="slide">
+      <h2 class="slide-title">Mission & Vision</h2>
+      <div class="grid-2" style="margin-top: 10px;">
+        <div class="card">
+          <h3 style="color: var(--gold-dark); margin-bottom: 8px; font-size: 1rem;">OUR MISSION</h3>
+          <p style="color: var(--text-main);">To simplify business growth by creating a unified ecosystem where organizations can access exceptional talent, strategic guidance, and innovative execution through one trusted platform.</p>
+        </div>
+        <div class="card">
+          <h3 style="color: var(--gold-dark); margin-bottom: 8px; font-size: 1rem;">OUR VISION</h3>
+          <p style="color: var(--text-main);">To become Africa’s leading business execution ecosystem and a globally recognized platform that empowers businesses to innovate, scale, and succeed through seamless access to world-class professional talent.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 6: What We Offer (Part 1) -->
+    <section class="slide">
+      <h2 class="slide-title">What We Offer</h2>
+      <p class="subtitle">Multidisciplinary Expertise (Strategy, Design & Tech)</p>
+      <div class="tag-cloud">
+        <span class="tag">Brand Strategy</span><span class="tag">Business Strategy</span><span class="tag">Brand Identity Development</span>
+        <span class="tag">Business Consulting</span><span class="tag">Business Development</span><span class="tag">Startup Advisory</span>
+        <span class="tag">Market Research</span><span class="tag">Product Strategy</span><span class="tag">Graphic Design</span>
+        <span class="tag">Motion Graphics</span><span class="tag">Creative Direction</span><span class="tag">UI/UX Design</span>
+        <span class="tag">Product Design</span><span class="tag">Web Design</span><span class="tag">Website Development</span>
+        <span class="tag">Mobile Application Development</span><span class="tag">Software Development</span><span class="tag">Full Stack Development</span>
+        <span class="tag">Frontend Development</span><span class="tag">Backend Development</span><span class="tag">Artificial Intelligence Solutions</span>
+        <span class="tag">Automation</span><span class="tag">Data Analytics</span><span class="tag">Data Science</span>
+        <span class="tag">Cybersecurity</span><span class="tag">Cloud Solutions</span><span class="tag">IT Support</span>
+      </div>
+    </section>
+
+    <!-- Slide 7: What We Offer (Part 2) -->
+    <section class="slide">
+      <h2 class="slide-title">What We Offer</h2>
+      <p class="subtitle">Multidisciplinary Expertise (Marketing, Media & Operations)</p>
+      <div class="tag-cloud">
+        <span class="tag">Digital Marketing</span><span class="tag">Performance Marketing</span><span class="tag">Search Engine Optimization (SEO)</span>
+        <span class="tag">Search Engine Marketing (SEM)</span><span class="tag">Social Media Strategy</span><span class="tag">Social Media Management</span>
+        <span class="tag">Email Marketing</span><span class="tag">Public Relations</span><span class="tag">Corporate Communications</span>
+        <span class="tag">Content Strategy</span><span class="tag">Copywriting</span><span class="tag">Technical Writing</span>
+        <span class="tag">Creative Writing</span><span class="tag">Photography</span><span class="tag">Videography</span>
+        <span class="tag">Video Production</span><span class="tag">Video Editing</span><span class="tag">Animation</span>
+        <span class="tag">2D & 3D Design</span><span class="tag">Presentation Design</span><span class="tag">Investor Pitch Development</span>
+        <span class="tag">Proposal Development</span><span class="tag">Project Management</span><span class="tag">Operations Management</span>
+        <span class="tag">Virtual Assistance</span><span class="tag">Executive Assistance</span><span class="tag">Customer Experience Management</span>
+        <span class="tag">Human Resource Consulting</span><span class="tag">Recruitment Support</span><span class="tag">Financial Consulting</span>
+        <span class="tag">Accounting Support</span><span class="tag">Tax Advisory</span><span class="tag">Legal Documentation Support</span>
+        <span class="tag">Business Process Improvement</span><span class="tag">Event Branding</span><span class="tag">Training & Capacity Development</span>
+      </div>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">...and a continuously expanding network of specialized professionals tailored to meet evolving business needs.</p>
+    </section>
+
+    <!-- Slide 8: How Evolique Works -->
+    <section class="slide">
+      <h2 class="slide-title">How Evolique Works</h2>
+      <div class="grid-3">
+        <div class="card"><h4>1. Discover</h4><p>We understand the client’s vision, objectives, challenges, and business goals.</p></div>
+        <div class="card"><h4>2. Strategize</h4><p>We develop a customized execution roadmap and identify required expertise.</p></div>
+        <div class="card"><h4>3. Build</h4><p>We assemble a multidisciplinary team of professionals best suited for the project.</p></div>
+        <div class="card"><h4>4. Execute</h4><p>Centralized project management ensures quality, efficiency, and timely delivery.</p></div>
+        <div class="card"><h4>5. Scale</h4><p>We continue supporting businesses with solutions that enable sustainable growth.</p></div>
+      </div>
+    </section>
+
+    <!-- Slide 9: Why Evolique -->
+    <section class="slide">
+      <h2 class="slide-title">Why Evolique</h2>
+      <div class="grid-2">
+        <div class="card"><h4>One Ecosystem</h4><p>Everything a business needs, coordinated in one place.</p></div>
+        <div class="card"><h4>One Strategic Partner</h4><p>One relationship instead of managing multiple freelancers or agencies.</p></div>
+        <div class="card"><h4>Curated Professional Network</h4><p>Access to verified experts across multiple disciplines.</p></div>
+        <div class="card"><h4>Technology-Enabled Execution</h4><p>Smarter workflows, efficient collaboration, and transparent project management.</p></div>
+        <div class="card"><h4>Quality Without Compromise</h4><p>Every project follows structured quality standards from planning to delivery.</p></div>
+        <div class="card"><h4>Built for Growth</h4><p>Designed to support startups, SMEs, enterprises, NGOs, governments, and global organizations.</p></div>
+      </div>
+    </section>
+
+    <!-- Slide 10: Our Impact -->
+    <section class="slide">
+      <h2 class="slide-title">Our Impact</h2>
+      <p>Evolique exists to bridge the gap between ambitious ideas and exceptional execution.</p>
+      <div class="grid-3" style="margin-top: 10px;">
+        <div class="card"><h4>For Businesses</h4><p>We reduce the complexity of accessing professional services while accelerating growth.</p></div>
+        <div class="card"><h4>For Professionals</h4><p>We create meaningful opportunities to collaborate, innovate, and contribute to impactful projects.</p></div>
+        <div class="card"><h4>For the Economy</h4><p>We foster entrepreneurship, strengthen digital talent, and empower businesses to compete globally.</p></div>
+      </div>
+    </section>
+
+    <!-- Slide 11: The Future of Evolique -->
+    <section class="slide">
+      <h2 class="slide-title">The Future of Evolique</h2>
+      <p><strong>Today:</strong> Evolique is building a coordinated ecosystem of multidisciplinary professionals.</p>
+      <p><strong>Tomorrow:</strong> Evolique will evolve into an intelligent platform where businesses can seamlessly discover expertise, assemble project teams, manage workflows, monitor progress, and access end-to-end business solutions through a single digital experience.</p>
+      <p style="font-weight: 700; color: var(--gold-dark); margin-top: 14px;">Our long-term ambition is to become the trusted infrastructure powering business execution across Africa and beyond.</p>
+    </section>
+
+    <!-- Slide 12: Core Values & Summary -->
+    <section class="slide">
+      <h2 class="slide-title">Core Values & Summary</h2>
+      <p class="subtitle">OUR CORE VALUES</p>
+      <div class="tag-cloud" style="margin-bottom: 16px;">
+        <span class="tag">Excellence</span><span class="tag">Innovation</span><span class="tag">Collaboration</span>
+        <span class="tag">Integrity</span><span class="tag">Professionalism</span><span class="tag">Accountability</span>
+        <span class="tag">Growth</span><span class="tag">Impact</span><span class="tag">Creativity</span><span class="tag">Customer-Centricity</span>
+      </div>
+      <div class="card" style="text-align: center; border-left: none; border-top: 4px solid var(--gold); padding: 16px;">
+        <h4 style="color: var(--gold-dark); margin-bottom: 6px;">EVOLIQUE IN ONE SENTENCE</h4>
+        <p style="color: var(--navy); font-weight: 600;">Evolique is a technology-enabled business execution ecosystem that connects businesses with multidisciplinary professionals, transforming ideas into successful ventures through one coordinated, scalable, and trusted platform.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button class="btn" onclick="changeSlide(-1)">← Prev</button>
+    <div class="dots" id="dotsContainer"></div>
+    <button class="btn" onclick="changeSlide(1)">Next →</button>
+  </div>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const dotsContainer = document.getElementById('dotsContainer');
+
+    slides.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = `dot ${i === 0 ? 'active' : ''}`;
+      dot.onclick = () => goToSlide(i);
+      dotsContainer.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.dot');
+
+    function updateSlides() {
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === currentSlide);
+        if (dots[i]) dots[i].classList.toggle('active', i === currentSlide);
+      });
+    }
+
+    function changeSlide(direction) {
+      currentSlide = (currentSlide + direction + slides.length) % slides.length;
+      updateSlides();
+    }
+
+    function goToSlide(index) {
+      currentSlide = index;
+      updateSlides();
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'Space') changeSlide(1);
+      if (e.key === 'ArrowLeft') changeSlide(-1);
+    });
+
+    // Touch Swipe Navigation for mobile displays
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, false);
+
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, false);
+
+    function handleSwipe() {
+      if (touchEndX < touchStartX - 50) changeSlide(1);  // Swipe Left -> Next
+      if (touchEndX > touchStartX + 50) changeSlide(-1); // Swipe Right -> Prev
+    }
+  </script>
+</body>
+</html>
